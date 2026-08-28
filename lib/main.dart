@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,15 @@ import 'servisler/kimlik_servisi.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // İnternetsiz çalışabilmesi için Firestore'un cihazda önbellek
+  // tutmasını açıkça ayarlıyoruz (mobilde varsayılan olarak açık olsa da
+  // sınırsız önbellek boyutuyla bilinçli olarak belirtiyoruz).
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+
   runApp(const OrjandaUygulamasi());
 }
 
