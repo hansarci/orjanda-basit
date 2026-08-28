@@ -29,6 +29,13 @@ jobs:
       - name: Android klasörünü oluştur
         run: flutter create --platforms=android --org com.turhan .
 
+      - name: Uygulama adını ayarla
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST" ]; then
+            sed -i 's/android:label="[^"]*"/android:label="Orjanda+"/' "$MANIFEST"
+          fi
+
       - name: İkonları üret
         run: dart run flutter_launcher_icons
 
