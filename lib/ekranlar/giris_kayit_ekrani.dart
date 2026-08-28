@@ -139,6 +139,7 @@ class _GirisKayitEkraniState extends State<GirisKayitEkrani> {
         TextField(
           controller: _girisSifre,
           obscureText: true,
+          keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           decoration: const InputDecoration(hintText: 'Şifrenizi Giriniz'),
         ),
@@ -164,6 +165,7 @@ class _GirisKayitEkraniState extends State<GirisKayitEkrani> {
         TextField(
           controller: _kayitSifre,
           obscureText: true,
+          keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           decoration: const InputDecoration(hintText: 'Şifre Oluştur (En az 6 karakter)'),
         ),
