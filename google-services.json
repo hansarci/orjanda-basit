@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "724078469632",
+    "project_id": "orjanda-basit",
+    "storage_bucket": "orjanda-basit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724078469632:android:e2e671bc2a9ad591326ee5",
+        "android_client_info": {
+          "package_name": "com.turhan.orjanda_basit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOoHATj_7rkelQv_zJ2KJH5nWwoDRm42o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
