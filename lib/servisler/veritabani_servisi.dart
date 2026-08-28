@@ -40,8 +40,13 @@ class VeritabaniServisi {
   }
 
   /// Yeni bir aktif iş oluşturur, oluşan belgenin id'sini döner.
+  ///
+  /// Not: id, ağa hiç dokunmadan istemci tarafında üretilir (Firestore'un
+  /// `.doc()` metodu); yazma işlemi ise "gönder ve unut" mantığıyla
+  /// yapılır. Böylece internet olmasa bile ekran donmadan devam eder.
   Future<String> yeniIsOlustur(IsKaydi is_) async {
-    final ref = await _isler.add(is_.toMap());
+    final ref = _isler.doc();
+    ref.set(is_.toMap());
     return ref.id;
   }
 
