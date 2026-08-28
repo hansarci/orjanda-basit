@@ -23,7 +23,35 @@ class _ArsivEkraniState extends State<ArsivEkrani> {
   String get _kullaniciId => _kimlikServisi.suankiKullanici!.uid;
 
   void _uyariGoster(String mesaj) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mesaj)));
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: OrjandaRenkleri.kart,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: OrjandaRenkleri.turuncu),
+        ),
+        content: Text(
+          mesaj,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: OrjandaRenkleri.yazi, fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: OrjandaRenkleri.turuncu,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Tamam', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _aktifIseDon(IsKaydi? aktifIs) {
@@ -32,7 +60,7 @@ class _ArsivEkraniState extends State<ArsivEkrani> {
       return;
     }
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => KesimEkrani(isId: aktifIs.id!)),
+      MaterialPageRoute(builder: (_) => KesimEkrani(isKaydi: aktifIs)),
     );
   }
 
