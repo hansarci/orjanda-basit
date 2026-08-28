@@ -76,10 +76,11 @@ class _YeniIsEkraniState extends State<YeniIsEkrani> {
     );
 
     final isId = await _db.yeniIsOlustur(yeniIs);
+    yeniIs.id = isId;
 
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => KesimEkrani(isId: isId)),
+      MaterialPageRoute(builder: (_) => KesimEkrani(isKaydi: yeniIs)),
     );
   }
 
