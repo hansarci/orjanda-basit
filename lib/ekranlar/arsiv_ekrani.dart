@@ -22,6 +22,13 @@ class _ArsivEkraniState extends State<ArsivEkrani> {
 
   String get _kullaniciId => _kimlikServisi.suankiKullanici!.uid;
 
+  @override
+  void initState() {
+    super.initState();
+    // Bitiş üzerinden 1 yıldan fazla geçmiş işleri sessizce temizle.
+    _db.eskiTamamlananIsleriTemizle(_kullaniciId);
+  }
+
   void _uyariGoster(String mesaj) {
     showDialog(
       context: context,
