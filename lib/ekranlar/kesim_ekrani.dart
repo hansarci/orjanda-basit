@@ -22,6 +22,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
   late String _isAdi = widget.isKaydi.isAdi;
   late List<Pusula> _pusulalar = widget.isKaydi.pusulalar;
   int _seciliIndex = 0;
+  bool _pusulaEkleKilidi = false;
   final _pusulaSeciciKey = GlobalKey();
 
   void _kaydet() {
@@ -281,6 +282,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
               onPressed: () {
                 Navigator.pop(context);
                 _aramaController.clear();
+                FocusScope.of(this.context).unfocus();
               },
               style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
               child: const Text('Tamam', style: TextStyle(color: Colors.white)),
@@ -311,7 +313,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
               Positioned.fill(
                 child: TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
-                  duration: const Duration(milliseconds: 1500),
+                  duration: const Duration(milliseconds: 2500),
                   curve: Curves.easeOut,
                   builder: (context, deger, child) => FractionallySizedBox(
                     alignment: Alignment.centerLeft,
@@ -455,11 +457,14 @@ class _KesimEkraniState extends State<KesimEkrani> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+                      if (_pusulaEkleKilidi) return;
+
                       if (isimController.text.trim().isEmpty) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(content: Text('Pusula Sahibi ismini girmelisin.')));
                         return;
                       }
+                      _pusulaEkleKilidi = true;
                       int bas = int.tryParse(basController.text.trim()) ?? 1;
                       int son = int.tryParse(sonController.text.trim()) ?? (bas + 9);
                       if (son < bas) son = bas + 9;
@@ -472,6 +477,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
                       Navigator.pop(context);
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _basariGoster(yeniPusula.isim, '${yeniPusula.basNo} - ${yeniPusula.sonNo}');
+                        _pusulaEkleKilidi = false;
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
@@ -492,22 +498,37 @@ class _KesimEkraniState extends State<KesimEkrani> {
       builder: (context) => Dialog(
         backgroundColor: OrjandaRenkleri.kart,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: OrjandaRenkleri.turuncu)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Oluşturulan Pusula Bilgileri',
-                  style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
-              const SizedBox(height: 12),
-              _bilgiKutusu('Ağaç Aralığı', aralik, OrjandaRenkleri.yazi),
-              const SizedBox(height: 20),
-              _dolanTamamButonu(context),
-            ],
-          ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Oluşturulan Pusula Bilgileri',
+                      style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
+                  const SizedBox(height: 12),
+                  _bilgiKutusu('Ağaç Aralığı', aralik, OrjandaRenkleri.yazi),
+                  const SizedBox(height: 20),
+                  _dolanTamamButonu(context),
+                ],
+              ),
+            ),
+            Positioned(
+              top: -10,
+              right: -10,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
+                child: const Icon(Icons.check, color: Colors.white, size: 18),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -610,23 +631,38 @@ class _KesimEkraniState extends State<KesimEkrani> {
       builder: (context) => Dialog(
         backgroundColor: OrjandaRenkleri.kart,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: OrjandaRenkleri.turuncu)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Seçilen Pusulalar Silindi',
-                  style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              ...isimler.map((isim) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
-                  )),
-              const SizedBox(height: 4),
-              _dolanTamamButonu(context),
-            ],
-          ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Seçilen Pusulalar Silindi',
+                      style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  ...isimler.map((isim) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
+                      )),
+                  const SizedBox(height: 4),
+                  _dolanTamamButonu(context),
+                ],
+              ),
+            ),
+            Positioned(
+              top: -10,
+              right: -10,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(color: Color(0xFFC0392B), shape: BoxShape.circle),
+                child: const Icon(Icons.delete_outline, color: Colors.white, size: 18),
+              ),
+            ),
+          ],
         ),
       ),
     );
