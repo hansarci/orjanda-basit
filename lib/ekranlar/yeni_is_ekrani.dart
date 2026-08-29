@@ -89,6 +89,11 @@ class _YeniIsEkraniState extends State<YeniIsEkrani> {
   }
 
   Future<void> _kesimeBasla() async {
+    if (_isAdiController.text.trim().isEmpty) {
+      _uyariGoster('Kesime başlamadan önce iş adını girmelisin.');
+      return;
+    }
+
     if (_formlar.isEmpty) {
       _uyariGoster('Kesime başlamadan önce en az 1 pusula formu doldurmalısın.');
       return;
