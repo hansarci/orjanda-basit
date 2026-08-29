@@ -17,6 +17,7 @@ class KesimEkrani extends StatefulWidget {
 class _KesimEkraniState extends State<KesimEkrani> {
   final _db = VeritabaniServisi();
   final _aramaController = TextEditingController();
+  final _aramaFocusNode = FocusNode();
 
   late final String _isId = widget.isKaydi.id!;
   late String _isAdi = widget.isKaydi.isAdi;
@@ -34,6 +35,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
   @override
   void dispose() {
     _aramaController.dispose();
+    _aramaFocusNode.dispose();
     super.dispose();
   }
 
@@ -108,6 +110,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
                         height: 36,
                         child: TextField(
                           controller: _aramaController,
+                          focusNode: _aramaFocusNode,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 14),
@@ -282,7 +285,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
               onPressed: () {
                 Navigator.pop(context);
                 _aramaController.clear();
-                FocusScope.of(this.context).unfocus();
+                _aramaFocusNode.unfocus();
               },
               style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
               child: const Text('Tamam', style: TextStyle(color: Colors.white)),
@@ -295,39 +298,7 @@ class _KesimEkraniState extends State<KesimEkrani> {
 
   /// "Tamam" butonu — açılışta turuncu rengin soldan sağa doluşuyla belirir.
   Widget _dolanTamamButonu(BuildContext dialogContext) {
-    return Container(
-      width: double.infinity,
-      height: 48,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: OrjandaRenkleri.turuncu),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Navigator.pop(dialogContext),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned.fill(
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: const Duration(milliseconds: 2500),
-                  curve: Curves.easeOut,
-                  builder: (context, deger, child) => FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: deger,
-                    child: Container(color: OrjandaRenkleri.turuncu),
-                  ),
-                ),
-              ),
-              const Text('Tamam', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-      ),
-    );
+    return _DolanTamamButonu(onTamamlandiTiklandi: () => Navigator.pop(dialogContext));
   }
 
   Widget _bilgiKutusu(String etiket, String deger, Color renk) {
@@ -507,8 +478,11 @@ class _KesimEkraniState extends State<KesimEkrani> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Oluşturulan Pusula Bilgileri',
-                      style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 36),
+                    child: const Text('Oluşturulan Pusula Bilgileri',
+                        style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  ),
                   const SizedBox(height: 16),
                   _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
                   const SizedBox(height: 12),
@@ -519,13 +493,13 @@ class _KesimEkraniState extends State<KesimEkrani> {
               ),
             ),
             Positioned(
-              top: -10,
-              right: -10,
+              top: 12,
+              right: 12,
               child: Container(
-                width: 34,
-                height: 34,
+                width: 30,
+                height: 30,
                 decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
-                child: const Icon(Icons.check, color: Colors.white, size: 18),
+                child: const Icon(Icons.check, color: Colors.white, size: 16),
               ),
             ),
           ],
@@ -640,8 +614,11 @@ class _KesimEkraniState extends State<KesimEkrani> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Seçilen Pusulalar Silindi',
-                      style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 36),
+                    child: const Text('Seçilen Pusulalar Silindi',
+                        style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+                  ),
                   const SizedBox(height: 16),
                   ...isimler.map((isim) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -653,13 +630,13 @@ class _KesimEkraniState extends State<KesimEkrani> {
               ),
             ),
             Positioned(
-              top: -10,
-              right: -10,
+              top: 12,
+              right: 12,
               child: Container(
-                width: 34,
-                height: 34,
+                width: 30,
+                height: 30,
                 decoration: const BoxDecoration(color: Color(0xFFC0392B), shape: BoxShape.circle),
-                child: const Icon(Icons.delete_outline, color: Colors.white, size: 18),
+                child: const Icon(Icons.delete_outline, color: Colors.white, size: 16),
               ),
             ),
           ],
@@ -712,6 +689,58 @@ class _KesimEkraniState extends State<KesimEkrani> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const ArsivEkrani()),
       (route) => false,
+    );
+  }
+}
+
+/// "Tamam" butonu — 4 saniyede soldan sağa turuncu ile dolar;
+/// dolum bitene kadar tıklanamaz.
+class _DolanTamamButonu extends StatefulWidget {
+  final VoidCallback onTamamlandiTiklandi;
+  const _DolanTamamButonu({required this.onTamamlandiTiklandi});
+
+  @override
+  State<_DolanTamamButonu> createState() => _DolanTamamButonuState();
+}
+
+class _DolanTamamButonuState extends State<_DolanTamamButonu> {
+  bool _doldu = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 48,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: OrjandaRenkleri.turuncu),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _doldu ? widget.onTamamlandiTiklandi : null,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 4000),
+                  curve: Curves.easeOut,
+                  onEnd: () => setState(() => _doldu = true),
+                  builder: (context, deger, child) => FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: deger,
+                    child: Container(color: OrjandaRenkleri.turuncu),
+                  ),
+                ),
+              ),
+              const Text('Tamam', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
