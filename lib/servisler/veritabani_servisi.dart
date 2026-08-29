@@ -76,4 +76,25 @@ class VeritabaniServisi {
       'bitisTarihi': Timestamp.fromDate(bitisTarihi),
     });
   }
+
+  /// Bitiş tarihinin üzerinden 1 yıldan fazla geçmiş tamamlanmış işleri
+  /// sessizce siler. Firebase'de gereksiz yer kaplamaması için uygulama
+  /// her açıldığında (Arşiv ekranı yüklendiğinde) çağrılır — ayrı bir
+  /// sunucu/zamanlanmış görev gerektirmez.
+  Future<void> eskiTamamlananIsleriTemizle(String kullaniciId) async {
+    final birYilOnce = DateTime.now().subtract(const Duration(days: 365));
+
+    final sonuc = await _isler
+        .where('kullaniciId', isEqualTo: kullaniciId)
+        .where('durum', isEqualTo: 'tamamlandi')
+        .get();
+
+    for (final doc in sonuc.docs) {
+      final veri = doc.data();
+      final bitisTarihi = (veri['bitisTarihi'] as Timestamp?)?.toDate();
+      if (bitisTarihi != null && bitisTarihi.isBefore(birYilOnce)) {
+        doc.reference.delete();
+      }
+    }
+  }
 }
