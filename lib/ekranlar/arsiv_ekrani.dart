@@ -262,84 +262,102 @@ class _ArsivEkraniState extends State<ArsivEkrani> {
     showModalBottomSheet(
       context: context,
       backgroundColor: OrjandaRenkleri.kart,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(color: OrjandaRenkleri.cizgi, borderRadius: BorderRadius.circular(2)),
-                ),
-              ),
-              const Text('İş Adı', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
-              const SizedBox(height: 6),
-              _cerceveliAlan(is_.isAdi, ortala: true, kalin: true),
-              const SizedBox(height: 14),
-              const Text('Başlama ve Bitiş Tarihi', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: OrjandaRenkleri.turuncu),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(_tarihFormat.format(is_.baslamaTarihi),
-                        style: const TextStyle(color: OrjandaRenkleri.acikYesil, fontWeight: FontWeight.bold)),
-                    Text(
-                      is_.bitisTarihi != null ? _tarihFormat.format(is_.bitisTarihi!) : '-',
-                      style: const TextStyle(color: OrjandaRenkleri.kirmizi, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text('Pusula Sahipleri', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: OrjandaRenkleri.cizgi),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: is_.pusulalar
-                      .map((p) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _cerceveliAlan(p.isim, ortala: true, kalin: true),
-                          ))
-                      .toList(),
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text('Toplam Kesilen Ağaç', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
-              const SizedBox(height: 6),
-              _cerceveliAlan('${is_.toplamKesilenAgac}', ortala: true, kalin: true, renk: OrjandaRenkleri.acikYesil),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: OrjandaRenkleri.turuncu,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(color: OrjandaRenkleri.cizgi, borderRadius: BorderRadius.circular(2)),
                   ),
-                  child: const Text('Kapat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ],
+                const Text('İş Adı', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
+                const SizedBox(height: 6),
+                _cerceveliAlan(is_.isAdi, ortala: true, kalin: true),
+                const SizedBox(height: 14),
+                const Text('Başlama ve Bitiş Tarihi', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: OrjandaRenkleri.turuncu),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_tarihFormat.format(is_.baslamaTarihi),
+                          style: const TextStyle(color: OrjandaRenkleri.acikYesil, fontWeight: FontWeight.bold)),
+                      Text(
+                        is_.bitisTarihi != null ? _tarihFormat.format(is_.bitisTarihi!) : '-',
+                        style: const TextStyle(color: OrjandaRenkleri.kirmizi, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text('Pusula Sahipleri', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
+                const SizedBox(height: 6),
+                Container(
+                  constraints: is_.pusulalar.length > 3
+                      ? const BoxConstraints(maxHeight: 220)
+                      : const BoxConstraints(),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: OrjandaRenkleri.cizgi),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: is_.pusulalar.length > 3
+                      ? SingleChildScrollView(
+                          child: Column(
+                            children: is_.pusulalar
+                                .map((p) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: _cerceveliAlan(p.isim, ortala: true, kalin: true),
+                                    ))
+                                .toList(),
+                          ),
+                        )
+                      : Column(
+                          children: is_.pusulalar
+                              .map((p) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: _cerceveliAlan(p.isim, ortala: true, kalin: true),
+                                  ))
+                              .toList(),
+                        ),
+                ),
+                const SizedBox(height: 14),
+                const Text('Toplam Kesilen Ağaç', style: TextStyle(color: OrjandaRenkleri.yaziSoluk, fontSize: 13)),
+                const SizedBox(height: 6),
+                _cerceveliAlan('${is_.toplamKesilenAgac}', ortala: true, kalin: true, renk: OrjandaRenkleri.acikYesil),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: OrjandaRenkleri.turuncu,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Kapat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
