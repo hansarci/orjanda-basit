@@ -278,12 +278,52 @@ class _KesimEkraniState extends State<KesimEkrani> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+                _aramaController.clear();
+              },
               style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
               child: const Text('Tamam', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// "Tamam" butonu — açılışta turuncu rengin soldan sağa doluşuyla belirir.
+  Widget _dolanTamamButonu(BuildContext dialogContext) {
+    return Container(
+      width: double.infinity,
+      height: 48,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: OrjandaRenkleri.turuncu),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Navigator.pop(dialogContext),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 1500),
+                  curve: Curves.easeOut,
+                  builder: (context, deger, child) => FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: deger,
+                    child: Container(color: OrjandaRenkleri.turuncu),
+                  ),
+                ),
+              ),
+              const Text('Tamam', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -430,7 +470,9 @@ class _KesimEkraniState extends State<KesimEkrani> {
                       });
                       _kaydet();
                       Navigator.pop(context);
-                      _basariGoster(yeniPusula.isim, '${yeniPusula.basNo} - ${yeniPusula.sonNo}');
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _basariGoster(yeniPusula.isim, '${yeniPusula.basNo} - ${yeniPusula.sonNo}');
+                      });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
                     child: const Text('Ekle', style: TextStyle(color: Colors.white)),
@@ -447,27 +489,26 @@ class _KesimEkraniState extends State<KesimEkrani> {
   void _basariGoster(String isim, String aralik) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => Dialog(
         backgroundColor: OrjandaRenkleri.kart,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: OrjandaRenkleri.turuncu)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
-            const SizedBox(height: 12),
-            _bilgiKutusu('Ağaç Aralığı', aralik, OrjandaRenkleri.yazi),
-          ],
-        ),
-        actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
-              child: const Text('Tamam', style: TextStyle(color: Colors.white)),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Oluşturulan Pusula Bilgileri',
+                  style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
+              const SizedBox(height: 12),
+              _bilgiKutusu('Ağaç Aralığı', aralik, OrjandaRenkleri.yazi),
+              const SizedBox(height: 20),
+              _dolanTamamButonu(context),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -547,7 +588,9 @@ class _KesimEkraniState extends State<KesimEkrani> {
                       });
                       _kaydet();
                       Navigator.pop(context);
-                      _silindiGoster(silinenIsimler);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _silindiGoster(silinenIsimler);
+                      });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFC0392B)),
                     child: const Text('Sil', style: TextStyle(color: Colors.white)),
@@ -564,34 +607,71 @@ class _KesimEkraniState extends State<KesimEkrani> {
   void _silindiGoster(List<String> isimler) {
     showDialog(
       context: context,
+      builder: (context) => Dialog(
+        backgroundColor: OrjandaRenkleri.kart,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: OrjandaRenkleri.turuncu)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Seçilen Pusulalar Silindi',
+                  style: TextStyle(color: OrjandaRenkleri.yazi, fontSize: 17, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              ...isimler.map((isim) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
+                  )),
+              const SizedBox(height: 4),
+              _dolanTamamButonu(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _isiBitir() {
+    showDialog(
+      context: context,
       builder: (context) => AlertDialog(
         backgroundColor: OrjandaRenkleri.kart,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: OrjandaRenkleri.turuncu)),
-        title: const Text('Silinen pusulalar', style: TextStyle(color: OrjandaRenkleri.yazi)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: isimler
-              .map((isim) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _bilgiKutusu('Pusula Sahibi', isim, OrjandaRenkleri.acikYesil),
-                  ))
-              .toList(),
+        content: const Text(
+          'İşi bitirmek istiyor musunuz? Bir daha bu iş düzenine geri dönemez ve düzenleyemezsiniz.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: OrjandaRenkleri.yazi, fontWeight: FontWeight.w600),
         ),
         actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
-              child: const Text('Tamam', style: TextStyle(color: Colors.white)),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: OrjandaRenkleri.cizgi)),
+                  child: const Text('Vazgeç', style: TextStyle(color: OrjandaRenkleri.yaziSoluk)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _isiBitirOnaylandi();
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: OrjandaRenkleri.turuncu),
+                  child: const Text('Evet, Bitir', style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _isiBitir() {
+  void _isiBitirOnaylandi() {
     _db.isiBitir(_isId, DateTime.now());
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const ArsivEkrani()),
